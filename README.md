@@ -1,5 +1,4 @@
-Esercizio
-per l’esercizio di oggi, partendo dal lavoro svolto ieri, aggiungeremo i seguenti modelli con le relative relazioni col modello Post:
+Aggiungeremo i seguenti modelli con le relative relazioni col modello Post:
 
 Category (one-to-many): Ogni Post deve avere una categoria associata, e una categoria può avere più Post associati.
 
@@ -18,7 +17,7 @@ Implementare le validazioni tramite Schema e middleware dedicato.
 
 -------------------------------------------------------------------------------------------------------------
 
-Partendo dall’esercizio di ieri, aggiungiamo l’autenticazione al nostro progetto!
+Aggiungiamo l’autenticazione al nostro progetto!
 
 Create tutto il necessario (Model, Controller, rotte e validazioni) per implementare le due funzionalità principali:
 
@@ -27,7 +26,6 @@ Login utente: rotta POST /login
 
 Proteggete, attraverso un middleware che verifichi il token JWT passato nell’header della richiesta, le rotte di creazione, modifica e cancellazione della risorsa Post.
 
-Aggiungete la policy CORS per consentire a qualunque dominio di accedere alle API (tanto siamo in locale :linguaccia_occhi_chiusi:).
 
 BONUS:
 Aggiungete una relazione one-to-many fra i modelli User e Post.
@@ -37,11 +35,11 @@ Aggiungete un middleware che verifichi che un utente possa modificare o cancella
 ----------------------------------------------------------------- 
 installazioni necessarie:
 npm init
-npm i dotenv express @prisma/client
+npm i dotenv express @prisma/client bcrypt jsonwebtoken
 npm install -D nodemon
 npm install -D prisma
 
-validarzione:
+validazione:
 npm install express-validator
 
 

@@ -1,3 +1,5 @@
-module.exports = function(req,res,next){
-    res.status(404).send("errore 404 rotta errata")
-}
+const NotFound = require("../exceptions/notFound");
+
+module.exports = function (req, res, next) {
+  next(new NotFound("Route requested not found!"));
+};

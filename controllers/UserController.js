@@ -1,42 +1,85 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
-const { hash, compare } = require("../utility/hashPassword");
 const { matchedData } = require("express-validator");
 const bcrypt = require("bcrypt");
-
+const jsonwebtoken = require("jsonwebtoken");
+const usersAuthError = require("../exceptions/userAuth");
 
 const index = async function (req, res) {
-    const users = await prisma.user.findMany({
-        select: {
-            user: true
-        }
-    });
+    try {
+        const users = await prisma.user.findMany({
+            select: {
+                id: true,
+                email: true,
+                name: true,
+                role: true,
+            },
+        });
 
-    res.json({ users });
-}
+        res.json({ users });
+    } catch (error) {
+        console.error("Errore durante il recupero degli utenti:", error);
+        res.status(500).json({ error: "Errore durante la richiesta degli utenti" });
+    }
+};
 
 const register = async (req, res) => {
-    const data = matchedData(req);
+    try {
+        const data = matchedData(req);
 
-    data.password = await bcrypt.hash(data.password, 10);
+        data.password = await bcrypt.hash(data.password, 10);
 
-    const user = await prisma.user.create({
-        data: {
-            ...data
-        }, 
-        select: { //escludo la password nella risposta json
-            id: true,
-            email: true,
-            name: true,
-            role: true,
-        }
+        const user = await prisma.user.create({
+            data,
+            select: {
+                id: true,
+                email: true,
+                name: true,
+                role: true,
+            },
+        });
 
-    })
+        const token = jsonwebtoken.sign({ userId: user.id, email: user.email }, process.env.JWT_KEY, {
+            expiresIn: "1h",
+        });
 
-    res.json({ user: user, message: "Utente " + user.name + " creato correttamente" })
-}
+        res.json({ user, token });
+    } catch (error) {
+        console.error("Errore durante la registrazione dell'utente:", error);
+        res.status(500).json({ error: "Errore durante la registrazione dell'utente" });
+    }
+};
 
+const login = async (req, res, next) => {
+    try {
+        const { email, password } = req.body;
 
-const login = async (req, res, next) => { res.send("Ciao sono logi") }
+        const user = await prisma.user.findUnique({
+            where: { email },
+            select: {
+                id: true,
+                email: true,
+                name: true,
+                role: true,
+                password: true,
+            },
+        });
 
-module.exports = { index, login, register }
+        if (!user) return next(new usersAuthError("Utente non trovato"));
+
+        const comparePassword = await bcrypt.compare(password, user.password);
+
+        if (!comparePassword) return next(new usersAuthError("Password errata"));
+
+        const token = jsonwebtoken.sign({ userId: user.id, email: user.email }, process.env.JWT_KEY, {
+            expiresIn: "1h",
+        });
+
+        res.json({ user, token });
+    } catch (error) {
+        console.error("Errore durante il login dell'utente:", error);
+        res.status(500).json({ error: "Errore durante il login dell'utente" });
+    }
+};
+
+module.exports = { index, login, register };

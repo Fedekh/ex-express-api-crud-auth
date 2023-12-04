@@ -4,10 +4,12 @@ const routerPost = require("./routers/post");
 const routerTag = require("./routers/tag");
 const categoryRouter = require("./routers/category");
 const userRouter = require("./routers/user")
-
+const cors = require("cors");
 const app = express();
 const port = +process.env.PORT || 5555;
 const { log } = require("console");
+
+app.use(cors());
 
 //middleware per parsing body
 app.use(express.json());

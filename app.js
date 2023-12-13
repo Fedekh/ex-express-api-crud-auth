@@ -9,7 +9,7 @@ const app = express();
 const port = +process.env.PORT || 5555;
 const { log } = require("console");
 
-app.use(cors());
+app.use(cors('*'));
 
 //middleware per parsing body
 app.use(express.json());
@@ -38,5 +38,5 @@ app.use((err, req, res, next) => {
 
 //avvio app
 app.listen(port, () => {
-    log(`App avviata su https://localhost:${port}`);
+    log(`App avviata su http://localhost:${port}`);
 });

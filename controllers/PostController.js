@@ -7,7 +7,7 @@ const errorHandler = require("../middleware/errorHandler");
 
 const index = async (req, res) => {
     try {
-        const { page = 1, pageSize = 10 } = req.query;
+        const { page = 1, pageSize = 40 } = req.query;
 
 
         const total = await prisma.post.count();
@@ -25,7 +25,7 @@ const index = async (req, res) => {
         res.json({
             currentPage: +page,
             totalPages: totalPages,
-            totalResult:total,
+            totalResult: total,
             data: data
         });
     }
@@ -63,11 +63,11 @@ const show = async (req, res) => {
 
 const store = async (req, res, next) => {
     try {
-        // const validation = validationResult(req);
-        // if (!validation.isEmpty()) {
-        //     console.log(validation);
-        //     return next(new Error(errorHandler));
-        // }
+        const validation = validationResult(req);
+        if (!validation.isEmpty()) {
+            console.log(validation);
+            return next(new Error(errorHandler));
+        }
 
 
         const { title, content, image, published, category, tags } = req.body;
@@ -84,10 +84,14 @@ const store = async (req, res, next) => {
 
         // Verifica se i tag esistono
         const tagEsistenti = await prisma.tag.findMany({
-            where: { id: { in: tags } }
+            where: {
+                id: {
+                    in: tags.map(tag => parseInt(tag))
+                }
+            }
         });
 
-        const missingTags = tags.filter(tag => !tagEsistenti.some(existingTag => existingTag.id === tag));
+        const missingTags = tags.filter(tag => !tagEsistenti.some(existingTag => existingTag.id === +tag));
 
         if (missingTags.length > 0) {
             return next(new Error(`I seguenti tag non esistono: ${missingTags.join(', ')}`));
@@ -103,10 +107,10 @@ const store = async (req, res, next) => {
                 content: content,
                 published: published,
                 category: {
-                    connect: { id: category }
+                    connect: { id: +category }
                 },
                 tags: {
-                    connect: tagEsistenti.map(tag => ({ id: tag.id }))
+                    connect: tagEsistenti.map(tag => ({ id: +tag.id }))
                 }
             }
         });

@@ -10,7 +10,7 @@ router.get('/', postController.index);
 
 router.get('/:slug', postController.show);
 
-router.post('/',authHandler , checkSchema(postCreate), postController.store);
+router.post('/', postController.store);
 
 router.put("/:slug",authHandler, postController.update);
 

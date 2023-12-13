@@ -9,7 +9,7 @@ const app = express();
 const port = +process.env.PORT || 5555;
 const { log } = require("console");
 
-app.use(cors('*'));
+app.use(cors({origin:['http://localhost:']}));
 
 //middleware per parsing body
 app.use(express.json());

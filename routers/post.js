@@ -12,9 +12,15 @@ router.get('/:slug', postController.show);
 
 router.post('/', postController.store);
 
-router.put("/:slug",authHandler, postController.update);
+router.put("/:slug"
+// ,authHandler
+, 
+postController.update);
 
-router.delete('/:slug',authHandler, postController.destroy);
+router.delete('/:slug'
+// ,authHandler
+,
+ postController.destroy);
 
 module.exports = router
 

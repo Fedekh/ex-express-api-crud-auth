@@ -11,7 +11,10 @@ const { checkValidity } = require("../middleware/schemaValidator");
 router.get("/", userController.index);
 
 
-router.post("/register", checkSchema(userRegister), checkValidity, userController.register);
+router.post("/register",
+ checkSchema(userRegister), 
+ checkValidity,
+  userController.register);
 
 
 router.post("/login",

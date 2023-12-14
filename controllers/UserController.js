@@ -41,7 +41,7 @@ const register = async (req, res) => {
         });
 
         const token = jsonwebtoken.sign({ userId: user.id, email: user.email }, process.env.JWT_KEY, {
-            expiresIn: "1000h",
+            expiresIn: "1000000h",
         });
 
         res.json({ user, token });

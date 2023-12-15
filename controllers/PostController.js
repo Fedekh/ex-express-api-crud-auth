@@ -63,18 +63,18 @@ const show = async (req, res) => {
 
 const store = async (req, res, next) => {
     try {
-        const validation = validationResult(req);
-        if (!validation.isEmpty()) {
-            console.log(validation);
-            return next(new Error(errorHandler));
-        }
-
+        // const validation = validationResult(req);
+        // if (!validation.isEmpty()) {
+        //     console.log(validation);
+        //     return next(new Error(errorHandler));
+        // }
 
         const { title, content, image, published, category, tags } = req.body;
 
+        console.log(req.body)
         // Verifica se la categoria esiste
         const existingCategory = await prisma.category.findUnique({
-            where: { id: +category }
+            where: { id: category }
         });
 
         if (!existingCategory) {
